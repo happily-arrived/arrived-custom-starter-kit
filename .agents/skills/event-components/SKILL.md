@@ -127,7 +127,7 @@ The codebase is uniform on this — matching grep results is the fastest way to 
 - `base` — default page background and text — your "rest state"
 - `secondary` — quieter surfaces (footer, subdued accents)
 
-Don't introduce new `--event-*` vars without updating `layout.tsx` and either adding to `event.styles` upstream or hard-coding a fallback in `styleValue()`. If you just need a one-off color for a single event customization, prefer a plain Tailwind class — CSS vars are for things that vary across events.
+Don't introduce new `--event-*` vars without updating `layout.tsx` and either adding to `event.styles` upstream or hard-coding a fallback in `styleValue()`. Never hardcode a color that duplicates a value in `event.styles` — use the matching `--event-*` var. A plain Tailwind class is fine only for decorative styling the API doesn't model. More generally, never hardcode any event data the API provides (see "Rule: event data comes from the API" in AGENTS.md).
 
 ## Composition pattern: adding a new section
 
@@ -235,4 +235,4 @@ If you find yourself needing variants the primitive doesn't expose, prefer a wra
 
 - **Data-layer changes** (queries, types, the registration server action) — that's the `happily-api` skill.
 - **Adding new payload fields** upstream — coordinate with the Happily API team, then `npm run api:types`.
-- **Routing, metadata, env vars** — see CLAUDE.md and the `happily-api` skill.
+- **Routing, metadata, env vars** — see AGENTS.md and the `happily-api` skill.
