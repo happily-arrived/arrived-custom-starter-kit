@@ -171,7 +171,7 @@ from `generated/schema`.
 - **Customization scope:** everything in `components/` is meant to be redesigned per-event. The data
   layer (`lib/happily/`) and the registration contract stay the same — don't fork them per event.
 - **Never push to `main`.** Push a branch and open a PR. A git `pre-push` hook (`.githooks/`,
-  enabled by `npm install`) and a Claude Code `PreToolUse` hook (`.claude/hooks/`) both block it.
+  enabled by `npm install` via `scripts/setup.mjs`) and a Claude Code `PreToolUse` hook (`.claude/hooks/`) both block it.
   Don't bypass them with `--no-verify`.
 - `internal-app-that-has-api-routes/` is excluded in `tsconfig.json` and `eslint.config.mjs`. It is
   not part of this starter and does not exist in the tree; leave the exclusions alone.
@@ -187,6 +187,15 @@ Two repo-local skills carry the deep detail and auto-trigger by topic — prefer
 symlink to it so Claude Code finds the same skills — edit files under `.agents/skills/`, never
 replace the symlink with a copy. Keep `SKILL.md` frontmatter to the portable `name` +
 `description` fields so both tools load it.
+
+**Windows: the symlink may be a plain file.** Unless symlink support is enabled, git on Windows
+checks `.claude/skills` out as a 17-byte text file containing `../.agents/skills`, and Claude Code
+silently loads no skills (`npm install` prints a `[setup]` warning when this happens). If you're
+Claude Code and the `happily-api` / `event-components` skills aren't in your skill list, read the
+matching `.agents/skills/<name>/SKILL.md` directly before working in its area, and tell the user
+how to fix the checkout: enable Windows Developer Mode, run `git config core.symlinks true`, delete
+`.claude/skills`, then `git checkout -- .claude/skills`. Never "fix" it by committing a copied
+directory or a regular file in its place.
 
 ## Reference
 

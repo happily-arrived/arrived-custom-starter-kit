@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "api:types": "node scripts/generate-api-types.mjs",
-    "prepare": "git rev-parse --git-dir >/dev/null 2>&1 && git config core.hooksPath .githooks || true"
+    "prepare": "node scripts/setup.mjs"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

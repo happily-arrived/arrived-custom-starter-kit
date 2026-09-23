@@ -97,7 +97,7 @@ Errors to expect on the form: `CAPACITY_REACHED`, `DUPLICATE_EMAIL`, `VALIDATION
 
 Direct pushes to `main` are blocked. Work on a branch and merge through a pull request. Two hooks enforce this, and both apply to any `main` branch (your fork included), not just this repo:
 
-- **Git `pre-push` hook** (`.githooks/pre-push`). This one covers everyone: you, Codex, Claude Code, any other agent. `npm install` turns it on through the `prepare` script, which points `core.hooksPath` at `.githooks`. If you installed dependencies before this hook existed, or you skip `npm install`, turn it on yourself:
+- **Git `pre-push` hook** (`.githooks/pre-push`). This one covers everyone: you, Codex, Claude Code, any other agent. `npm install` turns it on through the `prepare` script (`scripts/setup.mjs`), which points `core.hooksPath` at `.githooks`. If you installed dependencies before this hook existed, or you skip `npm install`, turn it on yourself:
   ```bash
   git config core.hooksPath .githooks
   ```
@@ -126,6 +126,7 @@ That's it. The generated API types (`lib/happily/generated/schema.d.ts`) are com
 - **`Missing HAPPILY_EVENT_ID in .env.local`**: you skipped step 3, or the file is empty. Run `cp .env.example .env.local` and paste your event ID.
 - **`Failed to fetch OpenAPI schema`**: check that you have network access. If you set the `HAPPILY_API_SCHEMA_URL` override, make sure it points at a reachable schema URL.
 - **"Not found" page at `/`**: wrong `HAPPILY_EVENT_ID`, or the event isn't published yet (the site fetches published data by default). Open the page with `?preview=true` or set `HAPPILY_EVENT_ENV=staging` while drafting.
+- **`[setup] .claude/skills is not a symlink` during `npm install`** (usually Windows): git checked the skills symlink out as a plain file, so Claude Code won't load the repo's skills. Enable Windows Developer Mode, run `git config core.symlinks true`, delete `.claude/skills`, then run `git checkout -- .claude/skills`. Codex isn't affected.
 - **Styles look broken**: run `npm run api:types` once to make sure the generated schema is up to date.
 
 ## Resources
