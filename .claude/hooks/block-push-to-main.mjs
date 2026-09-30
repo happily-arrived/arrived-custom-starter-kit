@@ -29,6 +29,19 @@ function subcommandIndex(tokens) {
   return i;
 }
 
+// `git push` options that consume the following token as their value.
+const PUSH_OPTS_WITH_VALUE = new Set(["-o", "--push-option", "--repo", "--receive-pack", "--exec"]);
+
+// Positional push arguments (remote, then refspecs), skipping options and their values.
+function positionalArgs(args) {
+  const positional = [];
+  for (let i = 0; i < args.length; i++) {
+    if (!args[i].startsWith("-")) positional.push(args[i]);
+    else if (PUSH_OPTS_WITH_VALUE.has(args[i])) i++;
+  }
+  return positional;
+}
+
 function pushesMain(segment) {
   const tokens = segment.trim().split(/\s+/).map((t) => t.replace(/^['"]|['"]$/g, ""));
   if (tokens[0] !== "git") return false;
@@ -36,7 +49,7 @@ function pushesMain(segment) {
   if (tokens[pushAt] !== "push") return false;
   const args = tokens.slice(pushAt + 1);
   if (args.some((a) => a === "--all" || a === "--mirror")) return true;
-  const refspecs = args.filter((a) => !a.startsWith("-")).slice(1);
+  const refspecs = positionalArgs(args).slice(1);
   if (refspecs.length === 0) return currentBranch() === "main";
   return refspecs.some((spec) => {
     const [src, dst] = spec.includes(":") ? spec.split(":") : [spec, spec];
