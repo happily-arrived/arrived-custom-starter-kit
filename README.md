@@ -75,7 +75,7 @@ If analytics is configured for your event in Happily, the starter automatically 
 
 - `components/` — **all the visual stuff.** Every section (hero, agenda, speakers, sponsors, FAQ, registration, footer, etc.) lives here. Redesign freely.
 - `components/ui/` — shadcn primitives (button, input, etc.) styled with Tailwind v4. Use them or replace them.
-- `app/(event)/` — the route pages (home, confirmation, livestream, photos). Thin wrappers — touch these to change page composition, not visuals.
+- `app/(event)/` — the route pages (home, confirmation, livestream, photos). Add or change pages here when your design calls for it.
 - `lib/happily/` — API client and data queries. Leave alone unless you're pulling new fields from the API.
 - `app/globals.css` — global styles. Event-specific colors come from CSS variables (`--event-primary-bg`, `--event-accent-text`, etc.) set automatically from the event's design tokens.
 
@@ -86,6 +86,7 @@ If analytics is configured for your event in Happily, the starter automatically 
 - **Colors and fonts.** By default the site uses the colors set for the event in Arrived, applied as `--event-*` CSS variables in `app/(event)/layout.tsx`, and ships with Open Sans. Your design can override them: use your own colors and fonts where the design calls for them, and keep the `--event-*` variables everywhere else so those parts still follow the event's settings. The variables are set inline on `<body>`, so redefining them in a stylesheet won't work; apply your values directly (Tailwind classes, or your own CSS variables in `app/globals.css`).
 - **Tailwind v4 CSS-var syntax.** Use `bg-(--event-primary-bg)`, *not* the older `bg-[var(--event-primary-bg)]` arbitrary-value form. Match the surrounding code.
 - **Add a section.** Drop a new component into `components/`, then render it from `components/event-page.tsx`.
+- **Add or change pages.** Most sites are one page, but your design can add more or rework the existing ones. Create a new page at `app/(event)/<name>/page.tsx` so it picks up the site's layout, theme and header/footer, and add a link to it in the nav in `components/event-shell.tsx`. Keep the `/confirmation` page working: the registration form sends people there after they sign up.
 - **Feature toggles.** The photos page, livestream, calendar buttons, and registration CTA are gated by fields on the event payload (`event.photos_toggle`, `event.live_toggle`, `event.display_add_to_calendar`, `event.display_settings.*`). Happily HQ turns them on or off for the event, so build each gated section to show or hide with its toggle.
 
 ## Registration

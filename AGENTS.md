@@ -128,6 +128,15 @@ means dropping a component into `components/` and rendering it from here. Condit
 (`confirmation`, `livestream`, `photos`) are sibling routes in the `(event)` group and call
 `notFound()` themselves when their toggle is off.
 
+**Adding or changing pages.** Most sites are a single page, but a design may add pages or rework
+the existing ones. Put a new page in the `(event)` group (`app/(event)/<name>/page.tsx`) so it
+inherits the layout: theme vars, metadata, preview mode, analytics and the shell. Fetch with
+`getPublicEvent` (Next dedupes it with the layout's fetch), render through components in
+`components/`, and follow the same data rule as everywhere else. If the page maps to a toggle, gate
+it with `notFound()` like the existing conditional pages. Link it from the nav in
+`components/event-shell.tsx`, which is hand-built, so new pages don't appear there on their own.
+Keep `/confirmation` working: the registration form redirects there (`components/event-page.tsx`).
+
 **Feature gating.** There is no central `event.features` object. Conditionals read straight off the
 event payload: `event.photos_toggle`, `event.live_toggle`, `event.display_add_to_calendar`,
 `event.display_settings.{buttonLinks,hideNavigation}`, `event.content.displayAttendeesList`, plus
@@ -179,8 +188,9 @@ from `generated/schema`.
   decide deliberately.
 - **shadcn primitives** live in `components/ui/` (`radix-vega` style, `lucide` icons; see
   `components.json`). Path alias `@/*` maps to the repo root.
-- **Customization scope:** everything in `components/` is meant to be redesigned per-event. The data
-  layer (`lib/happily/`) and the registration contract stay the same — don't fork them per event.
+- **Customization scope:** everything in `components/` is meant to be redesigned per-event, and
+  pages in `app/(event)/` may be added or changed when the design calls for it. The data layer
+  (`lib/happily/`) and the registration contract stay the same — don't fork them per event.
 - **Never commit or push to `main`.** Before your first commit, check the current branch
   (`git branch --show-current`); if it's `main`, create a feature branch first
   (`git switch -c <name>`; uncommitted changes come along). Then push the branch and open a PR.

@@ -5,7 +5,7 @@ description: Use whenever working with files under `components/` in this repo �
 
 # Working with event components
 
-The `components/` directory is the **presentation layer** of this custom-starter repo. Every component there is meant to be redesigned per-event — that's the whole point of giving each event its own copy of the starter. The data layer (`lib/happily/`) and the routes (`app/(event)/`) stay the same across copies; you customize visuals, copy, layout, and gating in `components/`.
+The `components/` directory is the **presentation layer** of this custom-starter repo. Every component there is meant to be redesigned per-event — that's the whole point of giving each event its own copy of the starter. The data layer (`lib/happily/`) stays the same across copies; you customize visuals, layout, and gating in `components/`, and add or change pages in `app/(event)/` when the design calls for more than one page (see "Adding or changing pages" in AGENTS.md).
 
 This skill captures the patterns and gotchas for working in that layer. For wiring new endpoints, registration debugging, or anything under `lib/happily/`, use the `happily-api` skill — they're meant to be used together.
 
