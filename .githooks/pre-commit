@@ -1,0 +1,13 @@
+#!/bin/sh
+# Block commits on main — create a feature branch first, then merge through a pull request.
+# Enabled by `npm install` (the `prepare` script sets core.hooksPath to .githooks).
+
+branch=$(git symbolic-ref --short -q HEAD)
+
+if [ "$branch" = "main" ]; then
+  echo "pre-commit: commits on main are blocked. Create a branch first (git switch -c <name>)." >&2
+  echo "pre-commit: your staged changes are untouched and will come with you to the new branch." >&2
+  exit 1
+fi
+
+exit 0

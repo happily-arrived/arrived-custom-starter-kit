@@ -14,7 +14,7 @@ try {
   process.exit(0);
 }
 
-// Enable the committed git hooks (.githooks/pre-push blocks pushes to main).
+// Enable the committed git hooks (.githooks/pre-commit and pre-push block commits and pushes to main).
 git("config", "core.hooksPath", ".githooks");
 
 // .claude/skills is a symlink to .agents/skills. Git on Windows checks symlinks out as plain text
