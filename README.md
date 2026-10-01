@@ -4,32 +4,32 @@ Branded event sites, your way. A Next.js starter that turns a [Happily Arrived](
 
 ## How it works
 
-The starter ships a complete event site out of the box — hero, agenda, speakers, sponsors, FAQ, registration, the lot. You create an event in Happily, point this starter at it, and redesign the `components/` directory however you want. The data layer and registration handle themselves; you focus on look-and-feel. Deploy anywhere Next.js runs (Vercel is the easy path).
+The starter ships a complete event site out of the box — hero, agenda, speakers, sponsors, FAQ, registration, the lot. Each custom site job gets its own copy of this starter, pointed at one Happily event, and you redesign the `components/` directory however you want. The data layer and registration handle themselves; you focus on look-and-feel. Happily builds the previews and publishes the site for you.
 
 Design references and starting-point templates live in Figma: [Design Templates](https://www.figma.com/design/k8CN5DFdzpeLCYfhXZmpeT/Design-Jam-Templates). Use them as inspiration or ignore them — your call.
 
 ## Prerequisites
 
 - Node 20+ and npm
-- A Happily Arrived account — sign up at [app.happily.events](https://app.happily.events)
+- A GitHub account (Happily invites you by your GitHub username)
 
 ## Get started
 
-### 1. Create your event
+### 1. Accept your invitation
 
-1. Sign in to [app.happily.events](https://app.happily.events).
-2. Click **Create Event** and fill out the basics. You don't need to publish yet: preview mode (described below) reads drafts.
-3. Once created, you'll land on the event editor. Your event ID is in the URL: `app.happily.events/<EVENT_ID>/...` — copy that ID.
+Happily HQ creates a private repo for your job in the [`happily-arrived`](https://github.com/happily-arrived) GitHub organization, built from this starter and named after the job. GitHub emails you an invitation to that one repo. Accept it; the invitation expires after 7 days.
 
-### 2. Fork and clone
+You don't need a Happily account or a Vercel account. The event already exists in Happily, and Happily HQ gives you its event ID with the brief.
 
-1. Click **Fork** at the top of [the starter repo on GitHub](https://github.com/teamhappily/arrived-custom-starter) to create your own copy. Forking (instead of cloning directly) lets us see who's building with the starter and lets you push your customizations to your own GitHub.
-2. Clone your fork and install dependencies:
-   ```bash
-   git clone git@github.com:<your-username>/arrived-custom-starter.git
-   cd arrived-custom-starter
-   npm install
-   ```
+### 2. Clone and install
+
+```bash
+git clone git@github.com:happily-arrived/<your-repo>.git
+cd <your-repo>
+npm install
+```
+
+`npm install` also turns on the git hooks that keep your work off `main` (see [Sharing your work](#sharing-your-work)).
 
 ### 3. Configure
 
@@ -53,19 +53,19 @@ Fetches the live OpenAPI schema and writes typed bindings to `lib/happily/genera
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) — your event site renders with whatever content you've entered in Happily. Edits in the CMS show up here on refresh. If you haven't published your event yet, you'll see a "Not found" page: open [http://localhost:3000/?preview=true](http://localhost:3000/?preview=true) instead to see your draft.
+Open [http://localhost:3000](http://localhost:3000) — your event site renders with the event's content from Happily. Content changes made in Happily show up here on refresh. If the event hasn't been published yet, you'll see a "Not found" page: open [http://localhost:3000/?preview=true](http://localhost:3000/?preview=true) instead to see your draft.
 
 ### 6. Preview your draft
 
-The site shows your published event by default. To see unpublished changes, open any page with `?preview=true`:
+The site shows the published event by default. To see unpublished changes, open any page with `?preview=true`:
 
 ```
 http://localhost:3000/?preview=true
 ```
 
-This is the same URL the **Preview changes** button in Happily opens. Preview sticks for the rest of your browser session (it is stored in a session cookie), so internal navigation stays in preview — a banner at the top of the page reminds you while it is active, with an **Exit preview** link. Append `?preview=false` to go back to the published site, or just close the browser. If you prefer the site to always render your draft locally, set `HAPPILY_EVENT_ENV=staging` in `.env.local` instead.
+Preview sticks for the rest of your browser session (it is stored in a session cookie), so internal navigation stays in preview — a banner at the top of the page reminds you while it is active, with an **Exit preview** link. Append `?preview=false` to go back to the published site, or just close the browser. If you prefer the site to always render your draft locally, set `HAPPILY_EVENT_ENV=staging` in `.env.local` instead.
 
-Preview is handled by `proxy.ts` at the repo root (Next.js 16 renamed `middleware` to `proxy`). If your fork carries a custom `middleware.ts`, consolidate its logic into `proxy.ts`.
+Preview is handled by `proxy.ts` at the repo root (Next.js 16 renamed `middleware` to `proxy`). If you add a custom `middleware.ts`, consolidate its logic into `proxy.ts`.
 
 ## Analytics
 
@@ -77,43 +77,48 @@ If analytics is configured for your event in Happily, the starter automatically 
 - `components/ui/` — shadcn primitives (button, input, etc.) styled with Tailwind v4. Use them or replace them.
 - `app/(event)/` — the route pages (home, confirmation, livestream, photos). Thin wrappers — touch these to change page composition, not visuals.
 - `lib/happily/` — API client and data queries. Leave alone unless you're pulling new fields from the API.
-- `app/globals.css` — global styles. Event-specific colors come from CSS variables (`--event-primary-bg`, `--event-accent-text`, etc.) set automatically from your event's design tokens.
+- `app/globals.css` — global styles. Event-specific colors come from CSS variables (`--event-primary-bg`, `--event-accent-text`, etc.) set automatically from the event's design tokens.
 
 ## Customizing
 
-- **Event data comes from the API. Never hardcode it.** Anything the Arrived API provides (event name, dates, venue, copy, agenda, speakers, sponsors, FAQs, images, links, form fields, colors, fonts) must be rendered from the event payload, in new and existing components alike. If a field is empty, hide the element instead of filling in placeholder content. If you need something the API doesn't expose, add it in Happily rather than typing it into a component. Customizing means changing how the data looks, not replacing it.
-- **Colors and fonts.** Design tokens come from your event's settings in Happily, applied as CSS variables in `app/(event)/layout.tsx`. Use the `--event-*` variables for anything that varies per event. Fixed Tailwind colors are only for decorative styling the API doesn't model.
+- **Event data comes from the API. Never override it.** Anything the Arrived API provides (event name, dates, venue, copy, agenda, speakers, sponsors, FAQs, images, links, form fields) must be rendered from the event payload, in new and existing components alike, even if your design wants different wording: ask Happily HQ to change it in Arrived. If a field is empty for this event, hide the element instead of filling in placeholder content. Customizing means changing how the data looks, not replacing it.
+- **Adding content.** If your design calls for something the API doesn't have at all (an extra tagline, an illustration, a section the event data doesn't cover), you can add it in your components. Use real content from the brief, not placeholders.
+- **Colors and fonts.** By default the site uses the colors set for the event in Arrived, applied as `--event-*` CSS variables in `app/(event)/layout.tsx`, and ships with Open Sans. Your design can override them: use your own colors and fonts where the design calls for them, and keep the `--event-*` variables everywhere else so those parts still follow the event's settings. The variables are set inline on `<body>`, so redefining them in a stylesheet won't work; apply your values directly (Tailwind classes, or your own CSS variables in `app/globals.css`).
 - **Tailwind v4 CSS-var syntax.** Use `bg-(--event-primary-bg)`, *not* the older `bg-[var(--event-primary-bg)]` arbitrary-value form. Match the surrounding code.
 - **Add a section.** Drop a new component into `components/`, then render it from `components/event-page.tsx`.
-- **Feature toggles.** The photos page, livestream, calendar buttons, and registration CTA are gated by fields on the event payload (`event.photos_toggle`, `event.live_toggle`, `event.display_add_to_calendar`, `event.display_settings.*`). Toggle them in the Happily CMS to show or hide the corresponding sections.
+- **Feature toggles.** The photos page, livestream, calendar buttons, and registration CTA are gated by fields on the event payload (`event.photos_toggle`, `event.live_toggle`, `event.display_add_to_calendar`, `event.display_settings.*`). Happily HQ turns them on or off for the event, so build each gated section to show or hide with its toggle.
 
 ## Registration
 
-The registration form submits via a server action (`app/actions/register.ts`) to the Happily API. It sends attendee data only — Happily handles confirmation emails on the server. Any custom form fields you add in the Happily CMS show up automatically.
+The registration form submits via a server action (`app/actions/register.ts`) to the Happily API. It sends attendee data only — Happily handles confirmation emails on the server. Any custom form fields set up for the event in Happily show up automatically.
 
 Errors to expect on the form: `CAPACITY_REACHED`, `DUPLICATE_EMAIL`, `VALIDATION_ERROR`.
 
-## Pushing changes
+## Sharing your work
 
-Direct pushes to `main` are blocked. Work on a branch and merge through a pull request. Two hooks enforce this, and both apply to any `main` branch (your fork included), not just this repo:
+Every change reaches the site through a pull request that Happily reviews. Never commit to `main`, push to it, or merge your own pull request.
 
-- **Git `pre-push` hook** (`.githooks/pre-push`). This one covers everyone: you, Codex, Claude Code, any other agent. `npm install` turns it on through the `prepare` script (`scripts/setup.mjs`), which points `core.hooksPath` at `.githooks`. If you installed dependencies before this hook existed, or you skip `npm install`, turn it on yourself:
+1. **Create a branch** before you change anything:
+   ```bash
+   git switch -c my-change
+   ```
+   Already made changes on `main` without committing? Run the same command: your uncommitted changes come with you to the new branch.
+2. **Commit and push the branch**, then open a pull request into `main` on GitHub.
+3. **Wait for the preview.** A Happily bot comments on the pull request with "⏳ Building…", then edits that same comment to "✅ Ready" with a preview link. Every push to the pull request builds a new preview and updates the comment. If the build fails, the comment shows the last lines of the build log. Happily HQ sees each preview automatically. Previews are public but unguessable, and they never change the live site. Add `?preview=true` to see the event's unpublished draft content.
+4. **Happily takes it from there.** Happily HQ reviews the preview (and shows it to the client), then merges the pull request. Publishing is a separate step Happily HQ does. If you need changes after review, push more commits to the same pull request or open a new one.
+
+Don't connect this repo to Vercel or any other host yourself: Happily builds every preview and every production deploy. Merging into `main` never publishes anything on its own.
+
+Hooks block commits and pushes to `main` on your machine:
+
+- **Git `pre-commit` and `pre-push` hooks** (`.githooks/`). These cover everyone: you, Codex, Claude Code, any other agent. `pre-commit` refuses to commit while you're on `main`; `pre-push` refuses to push to `main` from any branch. `npm install` turns them on through the `prepare` script (`scripts/setup.mjs`), which points `core.hooksPath` at `.githooks`. If you skipped `npm install`, turn them on yourself:
   ```bash
   git config core.hooksPath .githooks
   ```
   Check that it's on with `git config core.hooksPath`, which should print `.githooks`.
 - **Claude Code hook** (`.claude/settings.json` → `.claude/hooks/block-push-to-main.mjs`). This one stops Claude Code before it even runs a `git push` that targets `main`, including a bare `git push` while you're on `main`. There's nothing to set up: Claude Code loads it automatically. Open `/hooks` in Claude Code to see it.
 
-Need to push to `main` anyway, for example the very first push of a brand-new fork? Run `git push --no-verify` yourself. To turn the git hook off completely, run `git config --unset core.hooksPath`.
-
-## Deploy to Vercel
-
-1. Push your branch to GitHub and merge it into `main` with a pull request. Vercel deploys `main` to production.
-2. Go to [vercel.com/new](https://vercel.com/new) and import the repository.
-3. Under **Environment Variables**, add `HAPPILY_EVENT_ID` with your event ID. That is the only variable a standard deploy needs.
-4. Click **Deploy**.
-
-That's it. The generated API types (`lib/happily/generated/schema.d.ts`) are committed to the repo, so the build works out of the box. If you ever want fresh types on every deploy, change the Vercel build command to `npm run api:types && npm run build`.
+Don't get around them with `--no-verify`. GitHub can't stop someone with write access from changing `main` directly, so Happily watches for it: any push, force-push or merge to `main` by someone outside the Happily team is flagged to Happily HQ, and you'll be asked to undo it and send it again as a pull request.
 
 ## API reference
 

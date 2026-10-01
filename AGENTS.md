@@ -37,28 +37,39 @@ regenerate, never hand-edit.
 
 **There is no test runner in this repo.** Verify changes with `npm run lint` and `npm run build`.
 
-## Rule: event data comes from the API — never hardcode it
+## Rule: event data comes from the API — never override it
 
-**Never hardcode any data that can be fetched from the Arrived API.** This applies to new
-components *and* existing ones. Customizing a component means changing how the data *looks*, never
-replacing the data with literals.
+**Never hardcode or override any data the Arrived API provides.** This applies to new components
+*and* existing ones. Customizing a component means changing how the data *looks*, never replacing
+the data with literals. Content the API doesn't have may be added; content it has may not be
+replaced.
 
 - **Covered:** event name, dates, times, timezone, venue/location, descriptions and body copy,
   agenda items, speakers, hosts, sponsors, FAQs, images and logos, links and CTAs, registration
-  form fields and options, capacity/active state, feature toggles, colors and fonts
-  (`event.styles` → `--event-*` vars), and page metadata/SEO. If it's in the event payload, render
-  it from the payload.
+  form fields and options, capacity/active state, feature toggles, and page metadata/SEO. If it's in
+  the event payload, render it from the payload.
 - **Check the schema before writing a literal.** Search `lib/happily/generated/schema.d.ts` (and
-  `lib/happily/types.ts`) for a matching field. If the value you need isn't exposed by the API, stop
-  and ask the user. Don't invent a hardcoded stand-in.
-- **No placeholder content.** When a field is null or empty, use the `components/helpers.ts`
-  fallbacks or hide the element/section. Don't fill the gap with sample text, stock images, or
-  made-up names.
-- **Existing hardcoded data is a bug.** If you touch a component and find literal event data, wire
-  it to the payload (or flag it if no field exists) rather than editing the literal.
-- **What may be literal:** layout, spacing, typography scale, icons, decorative styling, and generic
-  UI chrome with no API equivalent (e.g. a "Close" button's aria-label). Colors that vary per event
-  must use `--event-*` vars, not Tailwind palette classes.
+  `lib/happily/types.ts`) for a matching field. If one exists, use it, even when the design wants
+  different wording: content changes are made in Arrived, not in code.
+- **Adding content the API doesn't have is allowed.** If the design calls for content with no API
+  field (an extra tagline, a decorative illustration, a section the payload doesn't model), it may
+  be added in the component. Get the actual content from the user or the design; never invent it.
+- **No placeholder content.** When a field exists but is null or empty for this event, use the
+  `components/helpers.ts` fallbacks or hide the element/section. Don't fill the gap with sample
+  text, stock images, or made-up names; the content belongs in Arrived.
+- **Existing hardcoded data is a bug.** If you touch a component and find a literal that duplicates
+  an API field, wire it to the payload rather than editing the literal.
+- **Colors and fonts are defaults, not data.** `event.styles` carries the theme set in Arrived:
+  colors and border radius, which the layout applies as the nine `--event-*` vars, and fonts
+  (`fontPrimary`/`fontSecondary`, not wired up yet; the starter ships Open Sans). The design may
+  override them: use the design's own colors/fonts where it calls for them, and keep the
+  `--event-*` vars everywhere it doesn't, so those parts still follow the Arrived settings. The vars are set as
+  inline styles on `<body>`, so redefining `--event-*` in a stylesheet has no effect: apply the
+  design's values directly (Tailwind classes, or your own CSS custom properties in
+  `app/globals.css`).
+- **What may be literal:** layout, spacing, typography scale, icons, decorative styling, the
+  design's own colors and fonts, content the API doesn't model (see above), and generic UI chrome
+  (e.g. a "Close" button's aria-label).
 
 ## Architecture
 
@@ -170,9 +181,18 @@ from `generated/schema`.
   `components.json`). Path alias `@/*` maps to the repo root.
 - **Customization scope:** everything in `components/` is meant to be redesigned per-event. The data
   layer (`lib/happily/`) and the registration contract stay the same — don't fork them per event.
-- **Never push to `main`.** Push a branch and open a PR. A git `pre-push` hook (`.githooks/`,
-  enabled by `npm install` via `scripts/setup.mjs`) and a Claude Code `PreToolUse` hook (`.claude/hooks/`) both block it.
-  Don't bypass them with `--no-verify`.
+- **Never commit or push to `main`.** Before your first commit, check the current branch
+  (`git branch --show-current`); if it's `main`, create a feature branch first
+  (`git switch -c <name>`; uncommitted changes come along). Then push the branch and open a PR.
+  Git hooks in `.githooks/` (`pre-commit` and `pre-push`, enabled by `npm install` via
+  `scripts/setup.mjs`) and a Claude Code `PreToolUse` hook (`.claude/hooks/`) block commits and
+  pushes to `main`. Don't bypass them with `--no-verify`.
+- **Every PR gets a preview deploy; Happily handles merging and publishing.** Opening a PR into
+  `main` (and each push to it) makes a Happily bot build a preview and comment on the PR: "⏳
+  Building…", then "✅ Ready" with the preview link, or the tail of the build log if it failed.
+  Use that link to check the change on a real deployment. Don't merge the PR (Happily HQ reviews
+  and merges it), and don't connect the repo to Vercel or any other host: Happily builds every
+  preview and production deploy, and merging never publishes on its own.
 - `internal-app-that-has-api-routes/` is excluded in `tsconfig.json` and `eslint.config.mjs`. It is
   not part of this starter and does not exist in the tree; leave the exclusions alone.
 

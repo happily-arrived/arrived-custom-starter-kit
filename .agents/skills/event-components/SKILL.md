@@ -5,7 +5,7 @@ description: Use whenever working with files under `components/` in this repo �
 
 # Working with event components
 
-The `components/` directory is the **presentation layer** of this custom-starter repo. Every component there is meant to be redesigned per-event — that's the whole point of forking the starter. The data layer (`lib/happily/`) and the routes (`app/(event)/`) stay the same across forks; you customize visuals, copy, layout, and gating in `components/`.
+The `components/` directory is the **presentation layer** of this custom-starter repo. Every component there is meant to be redesigned per-event — that's the whole point of giving each event its own copy of the starter. The data layer (`lib/happily/`) and the routes (`app/(event)/`) stay the same across copies; you customize visuals, copy, layout, and gating in `components/`.
 
 This skill captures the patterns and gotchas for working in that layer. For wiring new endpoints, registration debugging, or anything under `lib/happily/`, use the `happily-api` skill — they're meant to be used together.
 
@@ -127,7 +127,7 @@ The codebase is uniform on this — matching grep results is the fastest way to 
 - `base` — default page background and text — your "rest state"
 - `secondary` — quieter surfaces (footer, subdued accents)
 
-Don't introduce new `--event-*` vars without updating `layout.tsx` and either adding to `event.styles` upstream or hard-coding a fallback in `styleValue()`. Never hardcode a color that duplicates a value in `event.styles` — use the matching `--event-*` var. A plain Tailwind class is fine only for decorative styling the API doesn't model. More generally, never hardcode any event data the API provides (see "Rule: event data comes from the API" in AGENTS.md).
+Don't introduce new `--event-*` vars without updating `layout.tsx` and either adding to `event.styles` upstream or hard-coding a fallback in `styleValue()`. The `--event-*` vars are the default theme from Arrived, and the design may override them: use the design's own colors and fonts where it calls for them, and the matching `--event-*` var everywhere else. They are set inline on `<body>`, so redefining them in a stylesheet has no effect; apply the design's values directly. Event *data* is different: never hardcode or override anything the API provides; only add content the API doesn't have (see "Rule: event data comes from the API" in AGENTS.md).
 
 ## Composition pattern: adding a new section
 
@@ -229,7 +229,7 @@ If you find yourself needing variants the primitive doesn't expose, prefer a wra
 - ❌ Hand-rolling date formatting. Use `formatEventDate`, `eventDateRange`, `eventTimeRange` — they're timezone-aware.
 - ❌ Re-implementing `value?.trim() || fallback`. That's `text()`.
 - ❌ Editing `components/ui/*` to add event-specific styling. Wrap or compose className instead.
-- ❌ Forking the data layer per event. `lib/happily/` stays the same across forks; only `components/` is meant to be redesigned.
+- ❌ Forking the data layer per event. `lib/happily/` stays the same across copies; only `components/` is meant to be redesigned.
 
 ## What's out of scope
 
