@@ -19,7 +19,7 @@ Design references and starting-point templates live in Figma: [Design Templates]
 
 Happily HQ creates a private repo for your job in the [`happily-arrived`](https://github.com/happily-arrived) GitHub organization, built from this starter and named after the job. GitHub emails you an invitation to that one repo. Accept it; the invitation expires after 7 days.
 
-The event already exists in Arrived, and Happily HQ gives you its event ID with the brief. Happily HQ may also add you as a collaborator on the event in [Arrived](https://app.happily.events); if so, the event ID is in the event's URL: `app.happily.events/<EVENT_ID>/...`. You don't need a Vercel account.
+The event already exists in Arrived. Happily sends you its event ID in your job email or brief. Happily HQ may also add you as a collaborator on the event in [Arrived](https://app.happily.events); if so, the event ID is in the event's URL: `app.happily.events/<EVENT_ID>/...`. You don't need a Vercel account.
 
 ### 2. Clone and install
 
