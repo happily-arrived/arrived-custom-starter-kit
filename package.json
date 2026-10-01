@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "api:types": "node scripts/generate-api-types.mjs"
+    "api:types": "node scripts/generate-api-types.mjs",
+    "prepare": "node scripts/setup.mjs"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

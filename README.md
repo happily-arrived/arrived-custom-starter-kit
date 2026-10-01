@@ -81,7 +81,8 @@ If analytics is configured for your event in Happily, the starter automatically 
 
 ## Customizing
 
-- **Colors and fonts.** Design tokens come from your event's settings in Happily, applied as CSS variables in `app/(event)/layout.tsx`. Hardcode in components only when you want a per-section override.
+- **Event data comes from the API. Never hardcode it.** Anything the Arrived API provides (event name, dates, venue, copy, agenda, speakers, sponsors, FAQs, images, links, form fields, colors, fonts) must be rendered from the event payload, in new and existing components alike. If a field is empty, hide the element instead of filling in placeholder content. If you need something the API doesn't expose, add it in Happily rather than typing it into a component. Customizing means changing how the data looks, not replacing it.
+- **Colors and fonts.** Design tokens come from your event's settings in Happily, applied as CSS variables in `app/(event)/layout.tsx`. Use the `--event-*` variables for anything that varies per event. Fixed Tailwind colors are only for decorative styling the API doesn't model.
 - **Tailwind v4 CSS-var syntax.** Use `bg-(--event-primary-bg)`, *not* the older `bg-[var(--event-primary-bg)]` arbitrary-value form. Match the surrounding code.
 - **Add a section.** Drop a new component into `components/`, then render it from `components/event-page.tsx`.
 - **Feature toggles.** The photos page, livestream, calendar buttons, and registration CTA are gated by fields on the event payload (`event.photos_toggle`, `event.live_toggle`, `event.display_add_to_calendar`, `event.display_settings.*`). Toggle them in the Happily CMS to show or hide the corresponding sections.
@@ -92,9 +93,22 @@ The registration form submits via a server action (`app/actions/register.ts`) to
 
 Errors to expect on the form: `CAPACITY_REACHED`, `DUPLICATE_EMAIL`, `VALIDATION_ERROR`.
 
+## Pushing changes
+
+Direct pushes to `main` are blocked. Work on a branch and merge through a pull request. Two hooks enforce this, and both apply to any `main` branch (your fork included), not just this repo:
+
+- **Git `pre-push` hook** (`.githooks/pre-push`). This one covers everyone: you, Codex, Claude Code, any other agent. `npm install` turns it on through the `prepare` script (`scripts/setup.mjs`), which points `core.hooksPath` at `.githooks`. If you installed dependencies before this hook existed, or you skip `npm install`, turn it on yourself:
+  ```bash
+  git config core.hooksPath .githooks
+  ```
+  Check that it's on with `git config core.hooksPath`, which should print `.githooks`.
+- **Claude Code hook** (`.claude/settings.json` → `.claude/hooks/block-push-to-main.mjs`). This one stops Claude Code before it even runs a `git push` that targets `main`, including a bare `git push` while you're on `main`. There's nothing to set up: Claude Code loads it automatically. Open `/hooks` in Claude Code to see it.
+
+Need to push to `main` anyway, for example the very first push of a brand-new fork? Run `git push --no-verify` yourself. To turn the git hook off completely, run `git config --unset core.hooksPath`.
+
 ## Deploy to Vercel
 
-1. Push your branch to GitHub.
+1. Push your branch to GitHub and merge it into `main` with a pull request. Vercel deploys `main` to production.
 2. Go to [vercel.com/new](https://vercel.com/new) and import the repository.
 3. Under **Environment Variables**, add `HAPPILY_EVENT_ID` with your event ID. That is the only variable a standard deploy needs.
 4. Click **Deploy**.
@@ -112,6 +126,7 @@ That's it. The generated API types (`lib/happily/generated/schema.d.ts`) are com
 - **`Missing HAPPILY_EVENT_ID in .env.local`**: you skipped step 3, or the file is empty. Run `cp .env.example .env.local` and paste your event ID.
 - **`Failed to fetch OpenAPI schema`**: check that you have network access. If you set the `HAPPILY_API_SCHEMA_URL` override, make sure it points at a reachable schema URL.
 - **"Not found" page at `/`**: wrong `HAPPILY_EVENT_ID`, or the event isn't published yet (the site fetches published data by default). Open the page with `?preview=true` or set `HAPPILY_EVENT_ENV=staging` while drafting.
+- **`[setup] .claude/skills is not a symlink` during `npm install`** (usually Windows): git checked the skills symlink out as a plain file, so Claude Code won't load the repo's skills. Enable Windows Developer Mode, run `git config core.symlinks true`, delete `.claude/skills`, then run `git checkout -- .claude/skills`. Codex isn't affected.
 - **Styles look broken**: run `npm run api:types` once to make sure the generated schema is up to date.
 
 ## Resources
