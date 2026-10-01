@@ -195,8 +195,10 @@ from `generated/schema`.
   (`git branch --show-current`); if it's `main`, create a feature branch first
   (`git switch -c <name>`; uncommitted changes come along). Then push the branch and open a PR.
   Git hooks in `.githooks/` (`pre-commit` and `pre-push`, enabled by `npm install` via
-  `scripts/setup.mjs`) and a Claude Code `PreToolUse` hook (`.claude/hooks/`) block commits and
-  pushes to `main`. Don't bypass them with `--no-verify`.
+  `scripts/setup.mjs`) block commits and pushes to `main`. A Claude Code `PreToolUse` hook
+  (`.claude/hooks/`) also blocks pushes to `main`, but not commits, so if `npm install` hasn't
+  run, nothing stops a commit on `main`: check the branch yourself. Don't bypass the hooks with
+  `--no-verify`.
 - **Every PR gets a preview deploy; Happily handles merging and publishing.** Opening a PR into
   `main` (and each push to it) makes a Happily bot build a preview and comment on the PR: "⏳
   Building…", then "✅ Ready" with the preview link, or the tail of the build log if it failed.
