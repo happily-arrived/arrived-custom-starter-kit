@@ -70,7 +70,7 @@ export interface paths {
         put?: never;
         /**
          * Submit an event registration
-         * @description Submit a registration or livestream access form. Fetch GET /api/public/{eventId} first and use the returned form.content.formSchema properties as the keys for request.data. Use form_type 2 for the main registration form and form_type 3 for the livestream access form.
+         * @description Submit a registration or livestream access form. Fetch GET /api/public/{eventId} first and use the returned form.content.formSchema properties as the keys for request.data. Use form_type 2 for the main registration form and form_type 3 for the livestream access form. Registration confirmation emails follow the enabled email settings saved for the event.
          */
         post: operations["registerForEvent"];
         delete?: never;
@@ -185,6 +185,30 @@ export interface components {
                 navCTA: {
                     text: string;
                     display: boolean;
+                };
+            } | null;
+            /** @description Per-section visibility chosen in the CMS. A missing key or `display` means visible. Always visible when the event lacks the section visibility feature. Content of hidden sections is still returned; custom sites decide whether to render it. */
+            sections: {
+                about?: {
+                    display?: boolean;
+                };
+                agenda?: {
+                    display?: boolean;
+                };
+                speakers?: {
+                    display?: boolean;
+                };
+                host?: {
+                    display?: boolean;
+                };
+                sponsors?: {
+                    display?: boolean;
+                };
+                faq?: {
+                    display?: boolean;
+                };
+                register?: {
+                    display?: boolean;
                 };
             } | null;
         };
