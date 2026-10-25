@@ -1,7 +1,11 @@
-import type { PublicEventData } from "@/lib/happily/types";
+import type { PublicEvent, PublicEventData } from "@/lib/happily/types";
 
 type EventContent = PublicEventData["event"]["content"];
 type EventStyles = PublicEventData["event"]["styles"];
+
+export type SectionKey = keyof NonNullable<
+  PublicEvent["display_settings"]["sections"]
+>;
 
 export function text(value: string | null | undefined, fallback = "") {
   return value?.trim() || fallback;
@@ -18,6 +22,32 @@ export function styleValue(
 ) {
   const value = styles[key];
   return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+export function isSectionVisible(event: PublicEvent, sectionKey: SectionKey) {
+  return event.display_settings.sections?.[sectionKey]?.display ?? true;
+}
+
+export function visibleSections(
+  eventData: PublicEventData,
+): Record<SectionKey, boolean> {
+  const { event, form, sessions, speakers, sponsors, faqs } = eventData;
+  const content = event.content;
+
+  return {
+    about:
+      (hasText(content.aboutTitle) || hasText(content.aboutDescription)) &&
+      isSectionVisible(event, "about"),
+    agenda: sessions.length > 0 && isSectionVisible(event, "agenda"),
+    speakers: speakers.length > 0 && isSectionVisible(event, "speakers"),
+    register: Boolean(form) && isSectionVisible(event, "register"),
+    host:
+      (hasText(content.companyAboutTitle) ||
+        hasText(content.companyAboutDescription)) &&
+      isSectionVisible(event, "host"),
+    sponsors: sponsors.length > 0 && isSectionVisible(event, "sponsors"),
+    faq: faqs.length > 0 && isSectionVisible(event, "faq"),
+  };
 }
 
 export function heroImage(content: EventContent) {

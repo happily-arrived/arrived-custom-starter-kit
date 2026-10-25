@@ -39,11 +39,12 @@ The gates that already exist:
 
 | Flag | Read at | Controls |
 | --- | --- | --- |
-| `event.photos_toggle` | `event-shell.tsx:26` | Gallery link in nav |
+| `event.photos_toggle` | `event-shell.tsx:32` | Gallery link in nav |
 | `event.live_toggle` | route-level | `/livestream` page, livestream form |
 | `event.display_add_to_calendar` | calendar buttons | AddToCalendar visibility |
-| `event.display_settings.hideNavigation` | `event-shell.tsx:41` (`?? false`) | Whether the nav renders at all |
-| `event.display_settings.buttonLinks.navCTA.display` | `event-shell.tsx:32` | Nav CTA button |
+| `event.display_settings.hideNavigation` | `event-shell.tsx:48` (`?? false`) | Whether the nav renders at all |
+| `event.display_settings.buttonLinks.navCTA.display` | `event-shell.tsx:39` | Nav CTA button |
+| `event.display_settings.sections.<key>.display` | `isSectionVisible` / `visibleSections` in `helpers.ts` (`?? true`), used by `event-page.tsx` and the nav in `event-shell.tsx` | Each section and its nav link (`about`, `agenda`, `speakers`, `host`, `sponsors`, `faq`); `register` also hides the hero and nav CTAs |
 | `event.display_settings.buttonLinks.heroCTA.display` | `hero-section.tsx` | Hero CTA button |
 | `event.display_settings.displayLocation` | `event-details.tsx:21` (`?? true`) | Location in event details strip |
 | `event.display_settings.displayDate` | `event-details.tsx:23` (`?? true`) | Date in event details strip |
@@ -54,7 +55,7 @@ The gates that already exist:
 **Decision rules when adding a section:**
 
 1. Does the data type already have a flag? Use it. (Photos has `photos_toggle`, livestream has `live_toggle`, etc.)
-2. Is the section just empty when there's no data? Prefer `array.length` / `hasText()` checks over inventing a flag. See `event-page.tsx:38` (`sessions.length ? ... : null`) — agenda doesn't need a flag because the empty state *is* the gate.
+2. Is the section just empty when there's no data? Prefer `array.length` / `hasText()` checks over inventing a flag. See the has-content checks in `visibleSections()` (`helpers.ts`), e.g. `agenda: sessions.length > 0` — agenda doesn't need its own flag because the empty state *is* the gate. Only sections the API models in `display_settings.sections` can follow the CMS show/hide choice, and `visibleSections()` already covers them; a new custom section gates on its own has-content check.
 3. Does it have a `display_settings.*` field? Default to true: `event.display_settings.someFlag ?? true`. Mirror the pattern in `event-details.tsx:21-24`.
 4. Don't invent a parallel feature-flag system. There is no `event.features.*` — each gate is its own field on the payload.
 
