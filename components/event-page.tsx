@@ -4,7 +4,7 @@ import { AgendaList } from "./agenda-list";
 import { Container } from "./container";
 import { ContentSection } from "./content-section";
 import { FaqList } from "./faq-list";
-import { hasText, text } from "./helpers";
+import { text, visibleSections } from "./helpers";
 import { HeroSection } from "./hero-section";
 import { Markdown } from "./markdown";
 import { RegistrationForm } from "./registration-form";
@@ -21,12 +21,13 @@ type EventPageProps = {
 export function EventPage({ eventData, eventId, env }: EventPageProps) {
   const { event, form, sessions, speakers, sponsors, faqs, tracks } = eventData;
   const content = event.content;
+  const sections = visibleSections(eventData);
 
   return (
     <main>
       <HeroSection event={event} formActive={form?.is_active} />
 
-      {hasText(content.aboutTitle) || hasText(content.aboutDescription) ? (
+      {sections.about ? (
         <ContentSection
           id="about"
           title={text(content.aboutTitle, "About")}
@@ -35,7 +36,7 @@ export function EventPage({ eventData, eventId, env }: EventPageProps) {
         />
       ) : null}
 
-      {sessions.length ? (
+      {sections.agenda ? (
         <Container id="agenda">
           <SectionHeading
             title={text(content.agendaTitle, "Agenda")}
@@ -52,7 +53,7 @@ export function EventPage({ eventData, eventId, env }: EventPageProps) {
         </Container>
       ) : null}
 
-      {speakers.length ? (
+      {sections.speakers ? (
         <Container id="speakers">
           <SectionHeading
             title={text(content.speakersTitle, "Speakers")}
@@ -64,7 +65,7 @@ export function EventPage({ eventData, eventId, env }: EventPageProps) {
         </Container>
       ) : null}
 
-      {form ? (
+      {form && sections.register ? (
         <Container
           id="register"
           className="flex max-w-7xl flex-col items-center text-center"
@@ -92,8 +93,7 @@ export function EventPage({ eventData, eventId, env }: EventPageProps) {
         </Container>
       ) : null}
 
-      {hasText(content.companyAboutTitle) ||
-      hasText(content.companyAboutDescription) ? (
+      {sections.host ? (
         <ContentSection
           id="host"
           title={text(content.companyAboutTitle, "About the Host")}
@@ -102,7 +102,7 @@ export function EventPage({ eventData, eventId, env }: EventPageProps) {
         />
       ) : null}
 
-      {sponsors.length ? (
+      {sections.sponsors ? (
         <Container id="sponsors">
           <SectionHeading
             title={text(content.sponsorsTitle, "Sponsors")}
@@ -114,7 +114,7 @@ export function EventPage({ eventData, eventId, env }: EventPageProps) {
         </Container>
       ) : null}
 
-      {faqs.length ? (
+      {sections.faq ? (
         <Container id="faqs">
           <SectionHeading
             title={text(content.faqsTitle, "FAQs")}

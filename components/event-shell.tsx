@@ -4,7 +4,8 @@ import type { PublicEventData } from "@/lib/happily/types";
 
 import { Footer } from "./footer";
 import { Header } from "./header";
-import { styleValue, text } from "./helpers";
+import type { SectionKey } from "./helpers";
+import { isSectionVisible, styleValue, text, visibleSections } from "./helpers";
 import type { NavLinkItem } from "./navbar";
 
 type EventShellProps = {
@@ -16,19 +17,25 @@ export function EventShell({ eventData, children }: EventShellProps) {
   const { event } = eventData;
   const styles = event.styles;
 
+  const sections = visibleSections(eventData);
+  const sectionLinks: (NavLinkItem & { section: SectionKey })[] = [
+    { label: "About", href: "/#about", section: "about" },
+    { label: "Agenda", href: "/#agenda", section: "agenda" },
+    { label: "Speakers", href: "/#speakers", section: "speakers" },
+    { label: "Host", href: "/#host", section: "host" },
+    { label: "Sponsors", href: "/#sponsors", section: "sponsors" },
+    { label: "FAQ", href: "/#faqs", section: "faq" },
+  ];
+
   const nav: NavLinkItem[] = [
-    { label: "About", href: "/#about" },
-    { label: "Agenda", href: "/#agenda" },
-    { label: "Speakers", href: "/#speakers" },
-    { label: "Host", href: "/#host" },
-    { label: "Sponsors", href: "/#sponsors" },
-    { label: "FAQ", href: "/#faq" },
+    ...sectionLinks.filter((link) => sections[link.section]),
     ...(event.photos_toggle ? [{ label: "Gallery", href: "/photos" }] : []),
   ];
 
   const buttonLinks = event.display_settings.buttonLinks;
   const showCta =
     eventData.form?.is_active &&
+    isSectionVisible(event, "register") &&
     buttonLinks?.navCTA.display &&
     buttonLinks.heroCTA.text;
 
