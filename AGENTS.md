@@ -123,7 +123,12 @@ script gate and the `<PreviewBanner>` (see above). Theming changes go here.
 `Header`/`Footer` and builds the nav. Structural changes go there.
 
 **Page composition** lives in `components/event-page.tsx`. Each section (about, agenda, speakers,
-register, host, sponsors, faqs) renders only when its data or content is non-empty. Adding a section
+register, host, sponsors, faqs) renders only when its data or content is non-empty **and**
+`event.display_settings.sections.<key>.display` isn't `false`; `visibleSections()` in
+`components/helpers.ts` holds both checks, and the nav in `event-shell.tsx` reads the same result,
+so a section and its nav link never disagree. Hiding `register` also hides the hero and nav CTAs.
+The API normalizes the flag to visible when the event lacks the feature, so never check plans here,
+and it still returns hidden sections' content (agenda sessions keep their speakers). Adding a section
 means dropping a component into `components/` and rendering it from here. Conditional pages
 (`confirmation`, `livestream`, `photos`) are sibling routes in the `(event)` group and call
 `notFound()` themselves when their toggle is off.
@@ -139,7 +144,7 @@ Keep `/confirmation` working: the registration form redirects there (`components
 
 **Feature gating.** There is no central `event.features` object. Conditionals read straight off the
 event payload: `event.photos_toggle`, `event.live_toggle`, `event.display_add_to_calendar`,
-`event.display_settings.{buttonLinks,hideNavigation}`, `event.content.displayAttendeesList`, plus
+`event.display_settings.{buttonLinks,hideNavigation,sections}`, `event.content.displayAttendeesList`, plus
 sub-resource flags like `photo_gallery.enabled` and `livestream.enabled`. Grep for these names when
 adding a gated section.
 
