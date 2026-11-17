@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 import { ScrollLink } from "./scroll-link";
 import { EventDetails } from "./event-details";
-import { heroImage, text } from "./helpers";
+import { heroImage, isSectionVisible, text } from "./helpers";
 import { Container } from "./container";
 
 type HeroSectionProps = {
@@ -65,6 +65,7 @@ export function HeroSection({ event, formActive }: HeroSectionProps) {
           <EventDetails event={event} />
           <p>{text(content.heroText)}</p>
           {formActive &&
+          isSectionVisible(event, "register") &&
           event.display_settings.buttonLinks?.heroCTA.display &&
           event.display_settings.buttonLinks.heroCTA.text ? (
             <Button

@@ -152,6 +152,7 @@ There is no central `event.features` flag. Gating is per-toggle, read directly o
 | `event.display_add_to_calendar` | Calendar buttons on home/confirmation |
 | `event.display_settings.buttonLinks.navCTA.display` | Nav CTA button |
 | `event.display_settings.hideNavigation` | Whether to show the nav at all |
+| `event.display_settings.sections.<key>.display` | Per-section show/hide (`about`, `agenda`, `speakers`, `host`, `sponsors`, `faq`, `register`); missing = visible, `sections` itself is nullable. Already normalized to visible by the API when the event lacks the feature, so don't check plans. Hidden sections' content is still in the payload |
 | `event.content.displayAttendeesList` | Confirmation page attendees |
 | `eventData.form?.is_active`, `eventData.form?.at_capacity` | Whether to show the registration form |
 
